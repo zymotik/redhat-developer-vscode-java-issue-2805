@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.virtualvenue</groupId>
+    <artifactId>services</artifactId>
+    <!--
+        This project has a static Maven version and is technically versioned
+        by building a release for every stable build of the master branch.
+        These releases are identified by the commit date and the commit digest,
+        e.g., "2021-02-24T16-02-52Z_0fd994efb9c6573983aa7856d187c75000b41442".
+    -->
+    <version>1.0.0</version>
+
+    <name>VVenue Services</name>
+    <description>The backend services to be used by the UIs.</description>
+
+    <properties>
+        <java.version>17</java.version>
+
+
+        <!-- Activates Jacoco for test coverage measuring -->
+        <jacoco.argLine/>
+
+        <maven.build.timestamp.format>yyyy-MM-dd-HH:mm'Z'</maven.build.timestamp.format>
+
+        <!--
+        As of 07/2021, we can not update moxy to >3.0.0 because this contains the switch from javax.xml.bind to
+        jakarta.xml.bind:
+        * "threeten-jaxb-core" has an updated v2.0. See https://github.com/threeten-jaxb/threeten-jaxb/issues/19
+        * However, Spring Boot is not yet compatible. They plan the switch for Spring Boot 3.0 which has no release
+          date yet. See https://github.com/spring-projects/spring-boot/issues/27020
+        -->
+        <org.eclipse.persistence.moxy.version>2.7.11</org.eclipse.persistence.moxy.version>
+        <threeten-jaxb-core.version>1.2</threeten-jaxb-core.version>
+
+        <springdoc-openapi-security.version>1.6.6</springdoc-openapi-security.version>
+        <spring-starter-security-firebase.version>1.2.8.RELEASE</spring-starter-security-firebase.version>
+        <google-firebase-admin.version>9.1.1</google-firebase-admin.version>
+        <opencsv.version>5.7.1</opencsv.version>
+        <lombok.version>1.18.24</lombok.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <commons-validator.version>1.7</commons-validator.version>
+        <xmlunit.version>2.9.0</xmlunit.version>
+    </properties>
+
+    <dependencies>
+        <!-- Includes:
+          - springboot-starter
+          - springboot-starter-tomcat
+          - springboot-starter-json:
+            - jackson-databind,
+            - jackson-dataype-jdk8,
+            - jackson-jsr310,
+            - jackson-module-parameter-names
+          -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+        Default spring-boot-starter is included in most other starters (e.g. web).
+         But we need it explicit in order to exclude the default logging from it
+         -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion><!-- we are not using it-->
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Needs to be an explicit dependency for @Valid to work, see https://stackoverflow.com/a/61984478 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-logging</artifactId>
+            <version>1.2.8.RELEASE</version>
+        </dependency>
+
+        <dependency><!--faster spring startup if everything is Auto-Configured-->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+        A lot of administrative endpoints via jmx and web.
+        For Web per default /health and /info are enabled
+        Via JMX most endpoints are enabled per default - dont forget to configure them in application.properties
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+
+        <!-- Secure this service using Firebase auth ID-Tokens -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-security-firebase</artifactId>
+            <version>${spring-starter-security-firebase.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+
+        <!-- jaxb provider for xml marshalling/unmarshalling -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${org.eclipse.persistence.moxy.version}</version>
+        </dependency>
+
+        <!-- Till today there is no sufficient java.util.time support in jaxb. Therefore we need some adapters.
+             https://github.com/eclipse-ee4j/jaxb-ri/issues/1174
+        -->
+        <!-- JAXB XmlJavaTypeAdapters for java.time.* (JSR-310) types e.g. OffsetDateTime, Instant, Duration,betc. -->
+        <!-- https://mvnrepository.com/artifact/io.github.threeten-jaxb/threeten-jaxb-core -->
+        <dependency>
+            <groupId>io.github.threeten-jaxb</groupId>
+            <artifactId>threeten-jaxb-core</artifactId>
+            <version>${threeten-jaxb-core.version}</version>
+        </dependency>
+
+        <!-- Commons -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons-validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-security</artifactId>
+            <version>${springdoc-openapi-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi-security.version}</version>
+        </dependency>
+
+        <!-- Manage firebase-auth (aka: gcp Identity Platform) users -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>${google-firebase-admin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+
+
+        <!-- includes: assertj, hamcrest, junit-jupiter, mockito -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <!-- We do not have old Junit4 tests -->
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+                <!-- We use assertj as assertion library -->
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <version>${xmlunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-assertj3</artifactId>
+            <version>${xmlunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- mock webserver to test Spring WebClient -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.10.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <!-- Use version from com.google.cloud:libraries-bom -->
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>26.1.5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>

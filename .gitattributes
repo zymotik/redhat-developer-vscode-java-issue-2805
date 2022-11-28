@@ -1,0 +1,5 @@
+# Set the default behavior for line endings during checkout, in case people don't have core.autocrlf set.
+* text=auto
+
+# Force shell scripts to have LF line endings
+*.sh eol=lf

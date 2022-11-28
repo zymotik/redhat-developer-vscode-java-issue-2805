@@ -1,0 +1,23 @@
+target/
+**/.attach_pid*
+
+#intellij
+*.iml
+/.idea/*
+# Keep the code styles.
+!/.idea/codeStyles
+/.idea/codeStyles/*
+!/.idea/codeStyles/Project.xml
+!/.idea/codeStyles/codeStyleConfig.xml
+
+/.credentials/*
+# Structure101
+structure101-settings.java.hsw
+.DS_Store
+/upload/
+
+# make env variables
+make-env-variables/*
+!make-env-variables/target-start-insecure.env
+
+.vscode/*.log
