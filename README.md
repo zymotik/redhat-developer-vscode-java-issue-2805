@@ -1,6 +1,6 @@
-# redhat-developer-vscode-java-issue-2805
+# redhat-developer-vscode-java-issue-2819
 
-Example repo to demonstrate @SuperBuilder annotation issue in Visual Studio code. See [issue 2850](https://github.com/redhat-developer/vscode-java/issues/2805) of [https://github.com/redhat-developer/vscode-java](https://github.com/redhat-developer/vscode-java).
+Example repo to demonstrate @SuperBuilder annotation issue in Visual Studio code. See [issue 2819](https://github.com/redhat-developer/vscode-java/issues/2819) of [https://github.com/redhat-developer/vscode-java](https://github.com/redhat-developer/vscode-java).
 
 ## Example 1:
 src/main/java/com/virtualvenue/model/widget/ContentWidget.java line 33:
